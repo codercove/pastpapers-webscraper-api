@@ -42,7 +42,7 @@ start(10, 0);
 start(11, 1);
 setTimeout(() => {
   console.log(filteredSources);
-  app.get("/sources", (req, res) => {
+  app.get("/", (req, res) => {
     res.send(filteredSources);
   });
 }, 2000);
