@@ -44,6 +44,7 @@ start(10, 0);
 start(11, 1);
 setTimeout(() => {
   app.get("/", (req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
     res.send(filteredSources);
   });
 }, 2000);
