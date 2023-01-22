@@ -3,11 +3,13 @@ import { load } from "cheerio";
 import Express from "express";
 import { sources } from "./config/sources.js";
 import { config } from "dotenv";
+import cors from "cors";
 config();
 const app = Express();
 const PORT = process.env.PORT || 8000;
 const filteredSources = [[], []];
 
+app.use(cors);
 app.listen(PORT || 8000, console.log(`Server is running on PORT ${PORT}`));
 
 const start = (grade, n) => {
@@ -41,7 +43,6 @@ const start = (grade, n) => {
 start(10, 0);
 start(11, 1);
 setTimeout(() => {
-  console.log(filteredSources);
   app.get("/", (req, res) => {
     res.send(filteredSources);
   });
