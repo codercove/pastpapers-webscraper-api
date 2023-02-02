@@ -1,4 +1,4 @@
-### pPastpaperslk Web-Scarper Api
+### Pastpaperslk Web-Scarper Api
 
 #### hosted api urls:
 
