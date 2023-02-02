@@ -43,10 +43,18 @@ const start = (grade, sub) => {
   app.get("/:grade/:sub", (req, res) => {
     start(req.params.grade,req.params.sub);
     setTimeout(() => {
-    res
+    if(!filteredSources==[]){
+      res
       .setHeader("Access-Control-Allow-Origin", "*")
       .status(201)
       .send(filteredSources);
+    }
+    else{
+      res
+      .setHeader("Access-Control-Allow-Origin", "*")
+      .status(404)
+      .send('The page you requested not found');
+    }
   }, 2000);
 
   });
