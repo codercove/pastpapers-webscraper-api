@@ -8,7 +8,7 @@ https://olet.onrender.com
 
 ### How to request data?
 <br/>
-There are two urls you can see above...For requesting data i recommend using https://uninterested-teal-twill.cyclic.app/.<br/> When requesting data replace {grade} with your grade. *Don't use one number like 9 use 09 instead. *
+There are two urls you can see above...For requesting data i recommend using https://uninterested-teal-twill.cyclic.app/.<br/> When requesting data replace {grade} with your grade. *Don't use one number like 9 use 09 instead. * also replace {subject} with subject.
 
 <br/>
 
