@@ -44,7 +44,7 @@ console.log(data)
 
 <br/>
 
-### If you are facing to an error feel free to contact me.
+### If you are facing an error feel free to contact me.
 Email: codercove@gmail.com
 
 <br/>
