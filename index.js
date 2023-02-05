@@ -8,7 +8,7 @@ dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 8000
 
-const getSources = async (grade, subject) => {
+ async function (grade, subject) {
   const filteredSources = []
   const res = await axios(`https://pastpapers.wiki/grade-${grade}-${subject}/`)
   const html = await res.data
@@ -16,7 +16,7 @@ const getSources = async (grade, subject) => {
 
   //Filter All Anchor Elements
   let j = 0;
-  $("a").each(async () => {
+  $("a").each(async function(){
     const unfilteredElement = $(this).attr('href')
     const unFilteredElementText = $(this).text()
     const splittedArr = unfilteredElement.split('-')
@@ -29,7 +29,7 @@ const getSources = async (grade, subject) => {
 
         //filter elemts that have specific class
 
-        $$(".wpfd_downloadlink").each(() => {
+        $$(".wpfd_downloadlink").each(function() {
           const unFilteredElementURL = $$(this).attr('href')
           filteredSources.push({
 
