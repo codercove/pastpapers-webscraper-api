@@ -74,13 +74,13 @@ app.get('/:grade/:subject', async (req, res) => {
   //Fetch download links of papers 
   const filteredSources = await getSources(grade, subject)
 
-  const responses = [{
-    //Successfull response
-    status: 200,
-    error: false,
-    message: 'no error - data fetched successfully',
-    items: filteredSources
-  },
+  const responses =  [//{
+  //   //Successfull response
+  //   status: 200,
+  //   error: false,
+  //   message: 'no error - data fetched successfully',
+  //   items: filteredSources
+  // },
   {
     //Unsuccessful response
     status: 404,
@@ -93,7 +93,7 @@ app.get('/:grade/:subject', async (req, res) => {
     res
       .setHeader('Access-Control-Allow-Origin', '*')
       .status(201)
-      .send(responses[0])
+      .send(filteredSources)
   } else {
     res
       .setHeader('Access-Control-Allow-Origin', '*')
