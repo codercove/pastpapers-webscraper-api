@@ -74,7 +74,7 @@ const start = async (grade, subject) => {
 app.get("/:grade/:subject", async (req, res) => {
   const sources = await start(req.params.grade, req.params.subject);
 
-  setTimeout(() => {
+  setTimeout(async() => {
     if (sources.length>0) {
       console.log(sources)
       const response = {
@@ -98,5 +98,5 @@ app.get("/:grade/:subject", async (req, res) => {
           message: 'requested data not found',
         });
     }
-  }, 2000);
+  }, 2100);
 })
