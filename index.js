@@ -1,58 +1,102 @@
 import axios from "axios";
-import cheerio from "cheerio";
-import dotenv from "dotenv";
+import { load } from "cheerio";
 import express from "express";
+import { config } from "dotenv";
 
-dotenv.config();
-
+config();
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-app.listen(PORT, () => {
-  console.log(`Server is running on PORT ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server is running on PORT ${PORT}`));
 
-app.get("/:grade/:sub", async (req, res) => {
-  const grade = req.params.grade;
-  const sub = req.params.sub;
-  const filteredSources = await getSources(grade, sub);
+const start = async (grade, subject) => {
+  let id = 0
+  let filteredSources = [];
+  try {
 
-  if (filteredSources) {
-    res.setHeader("Access-Control-Allow-Origin", "*")
-      .status(200)
-      .send(filteredSources);
-  } else {
-    res.setHeader("Access-Control-Allow-Origin", "*")
-      .status(404)
-      .send("The page you requested not found");
-  }
-});
+    const res = await axios.get(`https://pastpapers.wiki/grade-${grade}-${subject}/`);
+    const html = res.data;
+    const $ = load(html);
 
-async function getSources(grade, sub) {
-  const filteredSources = [];
-  const res = await axios(`https://pastpapers.wiki/grade-${grade}-${sub}/`);
-  const html = res.data;
-  const $ = cheerio.load(html);
+    $("a").each(async function () {
 
-  $("a").each(async function () {
-    const unFilteredElement = $(this).attr("href");
-    const unFilteredElementText = $(this).text();
-    const arr = unFilteredElement.split("-");
-    for (const i in arr) {
-      if (arr[i] === "paper") {
-        const resp = await axios(unFilteredElement);
-        const elm = resp.data;
-        const $$ = cheerio.load(elm);
-        $$(".wpfd_downloadlink").each(function () {
-          const unFilteredElementURL = $$(this).attr("href");
-          filteredSources.push({
-            name: unFilteredElementText,
-            url: unFilteredElementURL,
-          });
-        });
+      const unFilteredElement = $(this).attr("href");
+      const unFilteredElementText = $(this).text();
+      const arr = unFilteredElement.split("-");
+
+      for (const i in arr) {
+        if (arr[i] === "paper") {
+          try {
+
+            const resp = await axios.get(unFilteredElement);
+            const elm = resp.data;
+            const $$ = load(elm);
+
+            //search for anchor tags which have specific class
+
+            $$(".wpfd_downloadlink").each(function () {
+
+              const unFilteredElementURL = $$(this).attr("href");
+
+              //Insert fetched data to an Array
+
+              filteredSources.push({
+                id: id,
+                name: unFilteredElementText,
+                url: unFilteredElementURL
+              });
+
+              j++
+
+            });
+
+          } catch (error) {
+
+            console.error(error);
+
+          }
+        }
       }
-    }
-  });
+    });
 
-  return filteredSources;
-}
+  } catch (error) {
+
+    console.error(error);
+
+  }
+  finally {
+    filteredSources == [] ? null : filteredSources;
+  }
+};
+
+//Send response on client request
+
+app.get("/:grade/:subject", async (req, res) => {
+  const sources = await start(req.params.grade, req.params.subject);
+
+  setTimeout(() => {
+    if (sources) {
+      console.log(sources)
+      const response = {
+        status: 200,
+        error: false,
+        message: 'successfull',
+        items: sources
+      }
+      res
+        .set("Access-Control-Allow-Origin", "*")
+        .status(201)
+        .send(response);
+    }
+    else {
+      res
+        .set("Access-Control-Allow-Origin", "*")
+        .status(404)
+        .send({
+          status: 404,
+          error: true,
+          message: 'requested data not found',
+        });
+    }
+  }, 2000);
+})
