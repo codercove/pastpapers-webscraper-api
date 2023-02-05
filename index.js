@@ -8,7 +8,7 @@ dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 8000
 
- async function (grade, subject) {
+ async function getSources (grade, subject) {
   const filteredSources = []
   const res = await axios(`https://pastpapers.wiki/grade-${grade}-${subject}/`)
   const html = await res.data
