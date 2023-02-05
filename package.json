@@ -2,10 +2,10 @@
   "name": "pastpaperslk-api",
   "version": "1.0.0",
   "description": "",
-  "main": "index.min.js",
+  "main": "index.js",
   "scripts": {
-     "start": "node index.min.js",
-     "dev": "nodemon index.min.js"
+     "start": "node index.js",
+     "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
