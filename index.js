@@ -1,60 +1,104 @@
-import Axios from "axios";
-import { load } from "cheerio";
-import Express from "express";
-import { config } from "dotenv";
+import axios from 'axios'
+import cheerio from 'cheerio'
+import dotenv from 'dotenv'
+import express from 'express'
 
-config();
-const app = Express();
-const PORT = process.env.PORT || 8000;
-let filteredSources = [];
+dotenv.config()
 
+const app = express()
+const PORT = process.env.PORT || 8000
 
-app.listen(PORT || 8000, console.log(`Server is running on PORT ${PORT}`));
+const getSources = async (grade, subject) => {
+  const filteredSources = []
+  const res = await axios(`https://pastpapers.wiki/grade-${grade}-${subject}/`)
+  const html = await res.data
+  const $ = cheerio.load(html)
 
-const start = (grade, sub) => {
-  filteredSources = []
-  Axios(`https://pastpapers.wiki/grade-${grade}-${sub}/`).then((res) => {
-    const html = res.data;
-    const $ = load(html);
-    $("a").each(function () {
-      let unFilteredElement = $(this).attr("href");
-      let unFilteredElementText = $(this).text();
-        const arr = unFilteredElement.split('-')
-        for(let i in arr){
-          if(arr[i]=="paper"){
-            Axios(unFilteredElement).then((resp) => {
-              const elm = resp.data;
-              const $$ = load(elm);
-              $$(".wpfd_downloadlink").each(function () {
-                let unFilteredElementURL = $$(this).attr("href");
-                filteredSources.push({
-                  name: unFilteredElementText,
-                  url: unFilteredElementURL,
-                });
-              });
-            });
-          }
-        } 
-    });
-  });
-};
+  //Filter All Anchor Elements
+  let j = 0;
+  $("a").each(async () => {
+    const unfilteredElement = $(this).attr('href')
+    const unFilteredElementText = $(this).text()
+    const splittedArr = unfilteredElement.split('-')
 
+    for (const i in splittedArr) {
+      if (splittedArr[i] === "paper") {
+        const resp = await axios(unfilteredElement)
+        const elm = await resp.data
+        const $$ = cheerio.load(elm)
 
-  app.get("/:grade/:sub", (req, res) => {
-    start(req.params.grade,req.params.sub);
-    setTimeout(() => {
-    if(!filteredSources==[]){
-      res
-      .setHeader("Access-Control-Allow-Origin", "*")
+        //filter elemts that have specific class
+
+        $$(".wpfd_downloadlink").each(() => {
+          const unFilteredElementURL = $$(this).attr('href')
+          filteredSources.push({
+
+            //paper id
+            id: j,
+
+            //paper name
+            name: unFilteredElementText,
+
+            //paper donwload link
+            url: unFilteredElementURL
+
+          })
+          j += 1
+        })
+      }
+    }
+  })
+  return filteredSources
+}
+
+//Listening to PORT
+
+app.listen(PORT, () => console.log(`App is listening to PORT : ${PORT}`))
+
+//Sending responses
+
+app.get('/', (req, res) => {
+  res
+    .status(201)
+    .send({
+      status: 201,
+      error: false,
+      message: 'API is Working successfully'
+    })
+})
+
+app.get('/:grade/:subject', async (req, res) => {
+  const grade = req.params.grade
+  const subject = req.params.subject
+
+  //Fetch download links of papers 
+  const filteredSources = await getSources(grade, subject)
+
+  const responses = [{
+    //Successfull response
+    status: 200,
+    error: false,
+    message: 'no error - data fetched successfully',
+    items: filteredSources
+  },
+  {
+    //Unsuccessful response
+    status: 404,
+    error: true,
+    message: 'error - requested data not found',
+  }]
+
+  //Check if fetched data empty or not
+  if (filteredSources) {
+    res
+      .setHeader('Access-Control-Allow-Origin', '*')
       .status(201)
-      .send(filteredSources);
-    }
-    else{
-      res
-      .setHeader("Access-Control-Allow-Origin", "*")
+      .send(responses[0])
+  } else {
+    res
+      .setHeader('Access-Control-Allow-Origin', '*')
       .status(404)
-      .send('The page you requested not found');
-    }
-  }, 2000);
+      .send(responses[1])
+  }
 
-  });
+})
