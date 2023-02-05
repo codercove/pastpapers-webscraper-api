@@ -1,11 +1,11 @@
 {
-  "name": "backend",
+  "name": "pastpaperslk-api",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.min.js",
   "scripts": {
-     "start": "node index.js",
-     "dev": "nodemon index.js"
+     "start": "node index.min.js",
+     "dev": "nodemon index.min.js"
   },
   "keywords": [],
   "author": "",
