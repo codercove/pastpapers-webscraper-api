@@ -46,7 +46,7 @@ const start = async (grade, subject) => {
                 url: unFilteredElementURL
               });
 
-              j++
+              id++
 
             });
 
@@ -65,7 +65,7 @@ const start = async (grade, subject) => {
 
   }
   finally {
-    filteredSources == [] ? null : filteredSources;
+      return filteredSources
   }
 };
 
@@ -75,7 +75,7 @@ app.get("/:grade/:subject", async (req, res) => {
   const sources = await start(req.params.grade, req.params.subject);
 
   setTimeout(() => {
-    if (sources) {
+    if (sources.length>0) {
       console.log(sources)
       const response = {
         status: 200,
