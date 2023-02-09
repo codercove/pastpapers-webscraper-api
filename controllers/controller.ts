@@ -4,7 +4,16 @@ import axios from 'axios'
 import { load } from 'cheerio';
 
 const router = Router()
-
+router.get('/',(req,res)=>{
+  res
+   .status(201)
+   .setHeader('Access-Control-Allow-Headers','*')
+   .send({
+     status:201,
+     error:false,
+     message:"API is working."
+  })
+})
 router.get('/:grade/:subject',async(req,response)=>{
     let grade = req.params.grade.toString()
     let subject = req.params.subject.toString()
@@ -13,6 +22,7 @@ router.get('/:grade/:subject',async(req,response)=>{
     if(grade.length>2){
         response
          .status(404)
+         .setHeader('Access-Control-Allow-Headers','*')
          .send({
             status:404,
             error:true,
@@ -60,14 +70,20 @@ router.get('/:grade/:subject',async(req,response)=>{
               name: `Grade-${grade}-${subject}`
               items:[...arr]
             }
-            response.send(result)
+            response
+            .status(201)
+            .setHeader('Access-Control-Allow-Headers','*')
+            .send(result)
           }else{
             let result = {
               status:404,
               error:true,
               message:'Requested data not found.',
             }
-            response.send(result)
+            response
+               .status(404)
+               .setHeader('Access-Control-Allow-Headers','*')
+               .send(result)
           }
           
         

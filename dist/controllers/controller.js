@@ -12,6 +12,16 @@ import { Router } from "express";
 import axios from 'axios';
 import { load } from 'cheerio';
 const router = Router();
+router.get('/', (req, res) => {
+    res
+        .status(201)
+        .setHeader('Access-Control-Allow-Headers', '*')
+        .send({
+        status: 201,
+        error: false,
+        message: "API is working."
+    });
+});
 router.get('/:grade/:subject', (req, response) => __awaiter(void 0, void 0, void 0, function* () {
     let grade = req.params.grade.toString();
     let subject = req.params.subject.toString();
@@ -19,6 +29,7 @@ router.get('/:grade/:subject', (req, response) => __awaiter(void 0, void 0, void
     if (grade.length > 2) {
         response
             .status(404)
+            .setHeader('Access-Control-Allow-Headers', '*')
             .send({
             status: 404,
             error: true,
@@ -65,7 +76,10 @@ router.get('/:grade/:subject', (req, response) => __awaiter(void 0, void 0, void
                     name: `Grade-${grade}-${subject}`,
                     items: [...arr]
                 };
-                response.send(result);
+                response
+                    .status(201)
+                    .setHeader('Access-Control-Allow-Headers', '*')
+                    .send(result);
             }
             else {
                 let result = {
@@ -73,7 +87,10 @@ router.get('/:grade/:subject', (req, response) => __awaiter(void 0, void 0, void
                     error: true,
                     message: 'Requested data not found.',
                 };
-                response.send(result);
+                response
+                    .status(404)
+                    .setHeader('Access-Control-Allow-Headers', '*')
+                    .send(result);
             }
         }, 5600);
     }
